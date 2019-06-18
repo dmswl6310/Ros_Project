@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 		moveData = turtle_move(distance);		
                 ROS_INFO("to move: %.2f", moveData.angular.z);
 		pub.publish(moveData);
-                rate.sleep(10);
+                //rate.sleep(10);
 
                 moveData.linear.x = 0;
                 moveData.angular.z = 0;
