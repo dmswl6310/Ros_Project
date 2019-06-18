@@ -18,6 +18,7 @@ void msgCallback(const knu_ros_lecture::knuRosLecture &msg)
 
 };
 
+
 geometry_msgs::Twist turtle_move(double dist)
 {
 	geometry_msgs::Twist moveD;
@@ -65,7 +66,7 @@ geometry_msgs::Twist turtle_move(double dist)
 	}
 	
 	return moveD;
-}
+} 
 
 int main (int argc, char **argv)
 {
@@ -77,7 +78,7 @@ int main (int argc, char **argv)
 	ros::Subscriber sub = nh1.subscribe("user_msg_tutorial", 100, &msgCallback);
 	
 	//create a publisher object
-	ros::Publisher pub = nh2.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+	ros::Publisher pub = nh2.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 100);
 
 	float distance;
 
@@ -93,7 +94,12 @@ int main (int argc, char **argv)
 		moveData = turtle_move(distance);		
                 ROS_INFO("to move: %.2f", moveData.angular.z);
 		pub.publish(moveData);
+                rate.sleep(10);
 
+                moveData.linear.x = 0;
+                moveData.angular.z = 0;
+                pub.publish(moveData);
+                
  		ros::spinOnce();
 	}
 
