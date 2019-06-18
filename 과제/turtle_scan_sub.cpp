@@ -5,9 +5,6 @@
 #include <boost/thread/mutex.hpp>
 #include <tf/tf.h>
 
-
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global variable
 boost::mutex mutex;
@@ -63,8 +60,6 @@ void odomMsgCallback(const sensor_msgs::LaserScan &scan)
 */
 
 	}
-
-
 
 
 int main(int argc, char **argv)
