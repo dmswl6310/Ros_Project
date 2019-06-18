@@ -18,7 +18,6 @@ void msgCallback(const knu_ros_lecture::knuRosLecture &msg)
 
 };
 
-
 geometry_msgs::Twist turtle_move(double dist)
 {
 	geometry_msgs::Twist moveD;
