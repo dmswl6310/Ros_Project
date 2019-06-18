@@ -68,7 +68,6 @@ convertScan2XYZs(sensor_msgs::LaserScan& lrfScan)
         // 원하는 각도를 넘어서면 , 종료. //70 ~ 290 
 	if(i==70)
 		i += 220;
-	
 	}
     //만나지 않을때. 
     if(count == 0) {
