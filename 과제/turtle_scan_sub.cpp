@@ -42,9 +42,9 @@ void odomMsgCallback(const sensor_msgs::LaserScan &scan)
 		count++;
 		sum += dRange;
         } 
-        // 원하는 각도를 넘어서면 , 종료. //70 ~ 290 
-	if(i==30)
-		i += 360;
+        // 원하는 각도를 넘어서면 , 종료. //15 ~ -15 
+	if(i==15)
+		i += 345;
 	
 	}
     //만나지 않을때. 
@@ -56,7 +56,7 @@ void odomMsgCallback(const sensor_msgs::LaserScan &scan)
     }
     printf("-70~70도 사이의 장애물까지의 평균거리 : %f\n", average);
     //충돌가능성 탐지
-    if(average <= 0.10 && average >= 0.0) {
+    if(average <= 0.10 && average > 0.01) {
 	flag_coll = 0;
         printf("충돌 가능성 들어감\n");
         ros::NodeHandle nh4 ;
