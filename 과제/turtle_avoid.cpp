@@ -4,9 +4,9 @@
 #include <boost/thread/mutex.hpp>
 #include <tf/tf.h>
 #include <math.h>
-#include <sensor_msgs/LaserScan.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sensor_msgs/LaserScan.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,10 +40,10 @@ odomMsgCallback(const nav_msgs::Odometry &msg)
 void
 scanMsgCallback(const sensor_msgs::LaserScan& msg)
 {
+    ROS_INFO("scan sensor check");
     // receive a '/odom' message with the mutex
-    mutex[1].lock(); {
         g_scan = msg;
-    } mutex[1].unlock();
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,15 +68,16 @@ convertScan2XYZs(sensor_msgs::LaserScan& lrfScan)
         // 원하는 각도를 넘어서면 , 종료. //70 ~ 290 
 	if(i==70)
 		i += 220;
+	
 	}
     //만나지 않을때. 
     if(count == 0) {
-	ROS_INFO("-70~70도 사이의 장애물 정보 없음 \n");
+	printf("-70~70도 사이의 장애물 정보 없음 \n");
 	return;
     } else {
 	average = sum/count;
     }
-    ROS_INFO("-70~70도 사이의 장애물까지의 평균거리 : %f\n", average);
+    printf("-70~70도 사이의 장애물까지의 평균거리 : %f\n", average);
     //충돌가능성 탐지
     if(average <= 0.30) {
 	flag_coll = 0;
@@ -90,16 +91,16 @@ convertScan2XYZs(sensor_msgs::LaserScan& lrfScan)
 int main(int argc, char **argv)
 {
     int i;
-    ros::init(argc, argv, "turtle__avoid");
+    ros::init(argc, argv, "turtle_avoid");
     // Ros initialization
     ros::NodeHandle nhp, nhs;
     // Decleation of subscriber
     ros::Subscriber subScan = nhs.subscribe("/scan", 10, &scanMsgCallback);
     // Create a publisher object
     ros::Publisher pub = nhp.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-	
+    
     sensor_msgs::LaserScan scan;
-    ros::Rate rate(10);
+    ros::Rate rate(2);
 	
     while(ros::ok()) {
 	mutex[1].lock(); {
