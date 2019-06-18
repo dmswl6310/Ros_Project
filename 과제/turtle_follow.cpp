@@ -3,6 +3,7 @@
 #include <geometry_msgs/Twist.h>
 #include <boost/thread/mutex.hpp>
 #include <stdlib.h>
+#include <cv_bridge/cv_bridge.h>
 
 boost::mutex mutex[2];
 
@@ -22,47 +23,48 @@ void msgCallback(const knu_ros_lecture::knuRosLecture &msg)
 geometry_msgs::Twist turtle_move(double dist)
 {
 	geometry_msgs::Twist moveD;
-        ROS_INFO("function in");
+	srand(time(0));
 
 	if(dist > -500 && dist <= -400)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = 0.25;
+		moveD.linear.x = 0.05; moveD.angular.z = 0.25;
 	}
 	else if(dist > -400 && dist <= -300)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = 0.2;
+		moveD.linear.x = 0.05; moveD.angular.z = 0.2;
 	}
 	else if(dist > -300 && dist <= -200)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = 0.15;
+		moveD.linear.x = 0.05; moveD.angular.z = 0.15;
 	}
 	else if(dist > -200 && dist <= -100)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = 0.1;
+		moveD.linear.x = 0.05; moveD.angular.z = 0.1;
 	}
 	else if(dist > -100 && dist <= 100) //straight direction
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = 0.0;
+		moveD.linear.x = 0.05; moveD.angular.z = 0.0;
 	}
 	else if(dist > 100 && dist <= 200)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = -0.1;
+		moveD.linear.x = 0.05; moveD.angular.z = -0.1;
 	}
 	else if(dist > 200 && dist <= 300)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = -0.15;
+		moveD.linear.x = 0.05; moveD.angular.z = -0.15;
 	}
 	else if(dist > 300 && dist <= 400)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = -0.2;
+		moveD.linear.x = 0.05; moveD.angular.z = -0.2;
 	}
 	else if(dist > 400 && dist <= 500)
 	{
-		moveD.linear.x = 0.5; moveD.angular.z = -0.25;
+		moveD.linear.x = 0.05; moveD.angular.z = -0.25;
 	}
-	else //faild to find
+	else // if dist > 500 or dist < -500 than random move 
 	{
 		moveD.linear.x = 0.0; moveD.angular.z = 0.0;
+		//moveD.linear.x = 0.1; moveD.angular.z = 2.*double(rand()) / double(RAND_MAX) - 1.;
 	}
 	
 	return moveD;
@@ -75,15 +77,17 @@ int main (int argc, char **argv)
 	ros::NodeHandle nh1;
 	ros::NodeHandle nh2;
 	//decleation of subscriber
-	ros::Subscriber sub = nh1.subscribe("user_msg_tutorial", 100, &msgCallback);
+	ros::Subscriber sub = nh1.subscribe("turtle_follow", 100, &msgCallback);
 	
 	//create a publisher object
-	ros::Publisher pub = nh2.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 100);
+	ros::Publisher pub = nh2.advertise<geometry_msgs::Twist>("/cmd_vel", 1000);
 
 	float distance;
 
-	ros::Rate rate(10);
+	ros::Rate loopRate(2);
+
 	while(ros::ok()) {
+		ros::spinOnce();
 		geometry_msgs::Twist moveData;
 
 		//mutex[1].lock(); {
@@ -92,15 +96,14 @@ int main (int argc, char **argv)
 		
                 
 		moveData = turtle_move(distance);		
-                ROS_INFO("to move: %.2f", moveData.angular.z);
+                ROS_INFO("linear.x: %.2f, angular.z: %.2f", moveData.linear.x, moveData.angular.z);
 		pub.publish(moveData);
-                //rate.sleep(10);
 
-                moveData.linear.x = 0;
-                moveData.angular.z = 0;
-                pub.publish(moveData);
+                //moveData.linear.x = 0;
+                //moveData.angular.z = 0;
+                //pub.publish(moveData);
                 
- 		ros::spinOnce();
+		loopRate.sleep();
 	}
 
 		
